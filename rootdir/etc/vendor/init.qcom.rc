@@ -103,6 +103,15 @@ on init
     chown root system /sys/fs/cgroup/memory/bg/tasks
     chmod 0660 /sys/fs/cgroup/memory/bg/tasks
 
+on fs
+    # debug boot process
+    rm /cache/boot_lc_full.txt
+    rm /cache/boot_lc_crash.txt
+    rm /cache/boot_lc_kernel.txt
+    start boot_lc
+    start boot_lc_kernel
+    start boot_lc_crash
+
 on post-fs
     chmod 0755 /sys/kernel/debug/tracing
     #ifdef OPLUS_BUG_STABLITY
@@ -417,6 +426,27 @@ on post-fs-data
 
     #Create dir for TUI
     mkdir /data/vendor/tui 0700 system drmrpc
+
+service boot_lc /system/bin/logcat -b all -D -f /cache/boot_lc_full.txt
+    class main
+    user root
+    group root system
+    disabled
+    oneshot
+
+service boot_lc_crash /system/bin/logcat -b crash -D -f /cache/boot_lc_crash.txt
+    class main
+    user root
+    group root system
+    disabled
+    oneshot
+
+service boot_lc_kernel /system/bin/logcat -b kernel -D -f /cache/boot_lc_kernel.txt
+    class main
+    user root
+    group root system
+    disabled
+    oneshot
 
 service nqnfcinfo /system/vendor/bin/nqnfcinfo
     class late_start
