@@ -17,7 +17,7 @@
     <!-- HBM type of UDFPS overlay.
             0 - GLOBAL HBM 
             1 - LOCAL HBM
-    -->
+    --> 
     <integer name="config_udfpshbmType">0</integer>
     <integer name="config_udfpsVendorCode">0</integer>
 
