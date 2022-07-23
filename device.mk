@@ -137,6 +137,8 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.camera.device@1.0.vendor \
     libstdc++.vendor \
     libxml2
+    GoogleCameraArnova \
+    vendor.xiaomi.hardware.motor@1.0.vendor
 
 # Context Hub
 PRODUCT_PACKAGES += \
