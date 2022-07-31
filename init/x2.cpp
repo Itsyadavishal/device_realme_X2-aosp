@@ -52,6 +52,11 @@ void property_override(char const prop[], char const value[]) {
         __system_property_add(prop, strlen(prop), value, strlen(value));
 }
 
+constexpr const char *BUILD_DESCRIPTION[] = {
+    "raven-user 12 SQ3A.220605.009.B1 8650216 release-keys",
+    "raven-user 12 SQ3A.220605.009.B1 8650216 release-keys",
+    "raven-user 12 SQ3A.220605.009.B1 8650216 release-keys",
+
 void set_ro_build_prop(const string &source, const string &prop,
                         const string &value, bool product = true) {
     string prop_name;
