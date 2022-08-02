@@ -753,6 +753,15 @@
 <!-- Whether device has VOOC charging support -->
     <bool name="config_hasVoocCharger">true</bool>
 
+<!-- Whether the device supports Smart Pixels -->
+<bool name="config_enableSmartPixels">true</bool>
+
+<!-- Night Light FOD -->
+    <bool name="disable_fod_night_light">true</bool>
+
+<!-- Pocket Lock -->
+    <bool name="config_pocketModeSupported">true</bool>
+
 <!-- Enables or disables fading edges when marquee is enabled in TextView.
          Off by default, since the framebuffer readback used to implement the
          fading edges is prohibitively expensive on most GPUs. -->
