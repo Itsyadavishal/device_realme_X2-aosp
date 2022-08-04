@@ -40,9 +40,9 @@
 #include "property_service.h"
 #include "vendor_init.h"
 
-using android::base::GetProperty;
+using android::base::SetProperty;
+using android::base::Trim;
 using std::string;
-
 static const char *snet_prop_key[] = {
     "ro.boot.vbmeta.device_state",
     "ro.boot.verifiedbootstate",
@@ -137,45 +137,42 @@ void vendor_load_properties() {
      * Detect device and configure properties
      */
      workaround_snet_properties();
-    std::string build_epoch, device, operator_name;
-    build_epoch = "1611387308";
+    std::string model, device, operatorname;
 
-    if (ReadFileToString(operator_name_file, &operator_name)) {
+    if (ReadFileToString(operatorname_file, &operatorname)) {
         /* CHINA */
-        if ((Trim(operator_name) == "8")) {
+        if ((Trim(operatorname) == "8")) {
         device = "RMX1991CN";
            property_override("ro.build.fingerprint", "google/raven/raven:12/SQ3A.220705.003.A1/8672226:user/release-keys");
            property_override("ro.build.product", "RMX1991CN");
            property_override("ro.boot.verifiedbootstate", "green");
-           for (const auto &source : ro_props_default_source_order) {
+           for (const string &source : source_partitions) {
                set_ro_product_prop(source, "device", "RMX1991CN");
                set_ro_product_prop(source, "model", "RMX1991");
            }
-           SetProperty("ro.separate.soft", "18637");
+
         /* FOREIGN */
-        } else if ((Trim(operator_name) == "30")) {
+        } else if ((Trim(operatorname) == "30")) {
         device = "RMX1993L1";
            property_override("ro.build.fingerprint", "google/raven/raven:12/SQ3A.220705.003.A1/8672226:user/release-keys");
            property_override("ro.build.product", "RMX1993L1");
            property_override("ro.boot.verifiedbootstate", "green");
-           for (const auto &source : ro_props_default_source_order) {
+           for (const string &source : source_partitions) {
                set_ro_product_prop(source, "device", "RMX1993L1");
                set_ro_product_prop(source, "model", "RMX1993");
            }
-           SetProperty("ro.separate.soft", "18623");
            SetProperty("ro.com.google.clientidbase.cr", "android-oppo");
            SetProperty("ro.com.google.clientidbase.ms", "android-oppo");
         /* FOREIGN INDIA */
-        } else if ((Trim(operator_name) == "31")) {
+        } else if ((Trim(operatorname) == "31")) {
         device = "RMX1992L1";
            property_override("ro.build.fingerprint", "google/raven/raven:12/SQ3A.220705.003.A1/8672226:user/release-keys");
            property_override("ro.build.product", "RMX1992L1");
            property_override("ro.boot.verifiedbootstate", "green");
-           for (const auto &source : ro_props_default_source_order) {
+           for (const string &source : source_partitions) {
                set_ro_product_prop(source, "device", "RMX1992L1");
                set_ro_product_prop(source, "model", "RMX1992");
            }
-           SetProperty("ro.separate.soft", "18621");
            SetProperty("ro.com.google.clientidbase.cr", "android-oppo");
            SetProperty("ro.com.google.clientidbase.ms", "android-oppo");
     }
@@ -183,8 +180,6 @@ void vendor_load_properties() {
            SetProperty("ro.com.google.clientidbase.cr", "android-oppo");
            SetProperty("ro.com.google.clientidbase.ms", "android-oppo");
         } else {
-        LOG(ERROR) << "Unsupported variant";
-        }
     property_override("ro.apex.updatable", "false");
     }
 
@@ -199,6 +194,7 @@ void vendor_load_properties() {
         set_ro_build_prop(source, "name", model);
     }
 
+                    {
     // dalvikvm props
     load_dalvikvm_properties();
 }
