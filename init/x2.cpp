@@ -43,37 +43,6 @@
 using android::base::GetProperty;
 using std::string;
 
-static const char *snet_prop_key[] = {
-    "ro.boot.vbmeta.device_state",
-    "ro.boot.verifiedbootstate",
-    "ro.boot.flash.locked",
-    "ro.boot.selinux",
-    "ro.boot.veritymode",
-    "ro.boot.warranty_bit",
-    "ro.warranty_bit",
-    "ro.debuggable",
-    "ro.secure",
-    "ro.build.type",
-    "ro.build.tags",
-    "ro.build.selinux",
-    NULL
-};
-static const char *snet_prop_value[] = {
-    "locked",
-    "green",
-    "1",
-    "enforcing",
-    "enforcing",
-    "0",
-    "0",
-    "0",
-    "1",
-    "user",
-    "release-keys",
-    "0",
-    NULL
-};
-
 void property_override(char const prop[], char const value[]) {
     auto pi = (prop_info*) __system_property_find(prop);
 
@@ -83,15 +52,6 @@ void property_override(char const prop[], char const value[]) {
         __system_property_add(prop, strlen(prop), value, strlen(value));
 }
 
-static void workaround_snet_properties() {
-    for (int i = 0; snet_prop_key[i]; ++i)
-        property_override(snet_prop_key[i], snet_prop_value[i]);
-}
-
-void vendor_load_properties()
-}
-
-workaround_snet_properties();
 void set_ro_build_prop(const string &source, const string &prop,
                         const string &value, bool product = true) {
     string prop_name;
@@ -136,56 +96,26 @@ void vendor_load_properties() {
     /*
      * Detect device and configure properties
      */
-     workaround_snet_properties();
-    std::string build_epoch, device, operator_name;
-    build_epoch = "1611387308";
+    std::ifstream infile("/proc/oplusVersion/operatorName");
+    string operatorName;
+    string device;
+    string model;
 
-    if (ReadFileToString(operator_name_file, &operator_name)) {
-        /* CHINA */
-        if ((Trim(operator_name) == "8")) {
-        device = "RMX1991CN";
-           property_override("ro.build.fingerprint", "google/raven/raven:12/SQ3A.220705.003.A1/8672226:user/release-keys");
-           property_override("ro.build.product", "RMX1991CN");
-           property_override("ro.boot.verifiedbootstate", "green");
-           for (const auto &source : ro_props_default_source_order) {
-               set_ro_product_prop(source, "device", "RMX1991CN");
-               set_ro_product_prop(source, "model", "RMX1991");
-           }
-           SetProperty("ro.separate.soft", "18637");
-        /* FOREIGN */
-        } else if ((Trim(operator_name) == "30")) {
-        device = "RMX1993L1";
-           property_override("ro.build.fingerprint", "google/raven/raven:12/SQ3A.220705.003.A1/8672226:user/release-keys");
-           property_override("ro.build.product", "RMX1993L1");
-           property_override("ro.boot.verifiedbootstate", "green");
-           for (const auto &source : ro_props_default_source_order) {
-               set_ro_product_prop(source, "device", "RMX1993L1");
-               set_ro_product_prop(source, "model", "RMX1993");
-           }
-           SetProperty("ro.separate.soft", "18623");
-           SetProperty("ro.com.google.clientidbase.cr", "android-oppo");
-           SetProperty("ro.com.google.clientidbase.ms", "android-oppo");
-        /* FOREIGN INDIA */
-        } else if ((Trim(operator_name) == "31")) {
-        device = "RMX1992L1";
-           property_override("ro.build.fingerprint", "google/raven/raven:12/SQ3A.220705.003.A1/8672226:user/release-keys");
-           property_override("ro.build.product", "RMX1992L1");
-           property_override("ro.boot.verifiedbootstate", "green");
-           for (const auto &source : ro_props_default_source_order) {
-               set_ro_product_prop(source, "device", "RMX1992L1");
-               set_ro_product_prop(source, "model", "RMX1992");
-           }
-           SetProperty("ro.separate.soft", "18621");
-           SetProperty("ro.com.google.clientidbase.cr", "android-oppo");
-           SetProperty("ro.com.google.clientidbase.ms", "android-oppo");
-    }
-           SetProperty("ro.separate.soft", "18633");
-           SetProperty("ro.com.google.clientidbase.cr", "android-oppo");
-           SetProperty("ro.com.google.clientidbase.ms", "android-oppo");
-        } else {
-        LOG(ERROR) << "Unsupported variant";
-        }
-    property_override("ro.apex.updatable", "false");
+    getline(infile, operatorName);
+
+    switch (stoi(operatorName)) {
+        case 8: // 1991
+            device = "RMX1991CN";
+            model = "RMX1991";
+            break;
+        case 31: // 1992
+            device = "RMX1992L1";
+            model = "RMX1992";
+            break;
+        default: // 1993
+            device = "RMX1993L1";
+            model = "RMX1993";
+            break;
     }
 
     // list of partitions to override props
@@ -198,7 +128,7 @@ void vendor_load_properties() {
         set_ro_build_prop(source, "model", model);
         set_ro_build_prop(source, "name", model);
     }
-
+    
     // dalvikvm props
     load_dalvikvm_properties();
 }
