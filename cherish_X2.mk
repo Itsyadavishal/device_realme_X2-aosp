@@ -6,7 +6,6 @@
 
 # Inherit some common Corvus stuff.
 $(call inherit-product, vendor/cherish/config/common.mk)
-$(call inherit-product-if-exists, vendor/lawnchair/lawnchair.mk)
 
 # Inherit from X2 device.
 $(call inherit-product,device/realme/X2/device.mk)
@@ -22,6 +21,10 @@ PRODUCT_MANUFACTURER := Realme
 TARGET_SUPPORTS_QUICK_TAP := true
 TARGET_INCLUDE_PIXEL_CHARGER := true
 TARGET_FACE_UNLOCK_SUPPORTED := true
+TARGET_SUPPORT_BLUR := true
+
+# FOD animations
+    EXTRA_UDFPS_ANIMATIONS := true
 
 PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
